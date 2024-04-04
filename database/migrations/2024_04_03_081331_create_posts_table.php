@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('content')->nullable();
-            $table->string('media_type')->nullable(); // 'image' or 'video'
-            $table->string('media_path')->nullable(); // Store the file path or URL of the media
+            $table->string('media')->nullable(); // 'image' or 'video'
             $table->timestamps();
         });
     }

@@ -38,10 +38,11 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::get('/', [ProfileController::class, 'index']);
     Route::get('/{id}', [ProfileController::class, 'show']);
     //Route::post('/', [ProfileController::class, 'store']); // no need of this route
-    Route::put('/{id}', [ProfileController::class, 'update']); 
-    Route::delete('/{id}', [ProfileController::class, 'destroy']);
-    Route::put('/{id}/privacy', [ProfileController::class, 'updatePrivacy']);
+    Route::put('/{id}/update', [ProfileController::class, 'update']); 
+    Route::delete('/{id}/delete', [ProfileController::class, 'destroy']);
     
+    Route::put('/{id}/privacy', [ProfileController::class, 'updatePrivacy']);
+
     Route::post('/{id}/follow', [ProfileController::class, 'followUser']);
     Route::post('/{id}/unfollow', [ProfileController::class, 'unfollowUser']);
     Route::get('/{id}/followers', [ProfileController::class, 'followers']);
@@ -56,9 +57,8 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::get('/', [PostController::class, 'index']);
     Route::get('/{id}', [PostController::class, 'show']);
     Route::post('/', [PostController::class, 'store']);
-    Route::put('/{id}', [PostController::class, 'update']);
-    Route::delete('/{id}', [PostController::class, 'destroy']);
-
+    Route::put('/{id}/update', [PostController::class, 'update']);
+    Route::delete('/{id}/delete', [PostController::class, 'destroy']);
     });
     
     // Like routes
