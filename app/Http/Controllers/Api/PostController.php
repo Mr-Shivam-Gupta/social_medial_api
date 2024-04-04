@@ -5,47 +5,74 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use App\Models\Profile;
+use App\Models\Follower;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+
 
 class PostController extends Controller
 {
 
-
-
-
     public function index()
     {
-        // Get the IDs of users that the authenticated user is following
-        $followingIds = auth()->user()->following()->pluck('profiles.user_id')->toArray();
-    
-        // Include the authenticated user's own ID in the list of following IDs
-        $followingIds[] = auth()->id();
-    
-        // Retrieve posts based on privacy settings of the users being followed
-        $posts = Post::whereIn('user_id', $followingIds)
-            ->where(function ($query) use ($followingIds) {
-                $query->whereHas('user.profile', function ($subquery) {
-                    $subquery->where('privacy', 'public');
-                })
-                ->orWhereIn('user_id', $followingIds); // Include own posts
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
-    
-        return response()->json(['posts' => $posts]);
+        
+    $user_id = auth()->id();
+    $posts = [];
+    // Retrieve posts from users with private profiles followed by the current user
+    $private_profiles = Profile::where('privacy', 'private')->get();
+    foreach ($private_profiles as $private_profile) {
+        $follower = Follower::where('user_id', $user_id)->first();
+        if ($follower) {
+            $private_posts = Post::where('user_id', $follower->follower_id)
+                ->orderByDesc('id')
+                ->select('content', 'media')
+                ->get()
+                ->toArray();
+            $posts = array_merge($posts, $private_posts);
+        }
+    }
+    // Retrieve posts from users with public profiles
+    $public_profiles = Profile::where('privacy', 'public')->get();
+    foreach ($public_profiles as $public_profile) {
+        $public_posts = Post::where('user_id', $public_profile->user_id)
+            ->orderByDesc('id')
+            ->select('id','content', 'media')
+            ->get()
+            ->toArray();
+        $posts = array_merge($posts, $public_posts);
+    }
+    return response()->json(['posts' => $posts]);
     }
 
     public function show($id)
     {
-        $post = Post::findOrFail($id);
-
-        // Check if the post owner is public or is being followed by the authenticated user
-        if ($post->user->isPublic() || auth()->user()->isFollowing($post->user)) {
-            return response()->json(['post' => $post]);
-        } else {
-            return response()->json(['error' => 'Unauthorized to view this post.'], 403);
+        // Retrieve the target user's profile
+        $profile = Profile::where('user_id', $id)->first();
+        // Check if the profile exists
+        if (!$profile) {
+            return response()->json(['message' => 'User not found'], 404);
         }
+
+        // Check if the profile is private or public
+        if ($profile->privacy === 'private') {
+            // Check if the requesting user follows the target user
+            $user = Auth::user();
+            $follower = Follower::where('user_id', $user->id)
+                ->where('follower_id', $id)
+                ->first();
+            // If the requesting user doesn't follow the target user, return 403 Forbidden
+            if (!$follower) {
+                return response()->json(['message' => 'Unauthorized'], 403);
+            }else{
+                $posts = Post::where('user_id', $id)->select('id','content', 'media')->get();
+            }
+        }else{
+            $posts = Post::where('user_id', $id)->select('id','content', 'media')->get();
+        }
+        return response()->json(['posts' => $posts]);
     }
+
 
     public function store(Request $request)
     {
