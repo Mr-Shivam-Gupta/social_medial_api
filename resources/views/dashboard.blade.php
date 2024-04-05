@@ -18,27 +18,28 @@
                         </div>
                     </div>
                         <div class="user-list h-screen overflow-y-auto">
-                    
-                            <a  href="#" class="flex px-5 py-3 transition hover:cursor-pointer hover:bg-slate-100 justify-between ">
-                                <div class="flex">
-                                    <div class="pr-4">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/194/194938.png" alt="User" width="50" />
-                                            {{-- <i class="fa fa-user-circle text-gray-300 text-5xl"></i> --}}
+                            <div class="users">
+                                <a  href="#" class="flex px-5 py-3 transition hover:cursor-pointer hover:bg-slate-100 justify-between ">
+                                    <div class="flex">
+                                        <div class="pr-4">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/194/194938.png" alt="User" width="50" />
+                                                {{-- <i class="fa fa-user-circle text-gray-300 text-5xl"></i> --}}
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <h3 class="text-md text-violet-500">user name</h3>
+                                            <p class="h-5 overflow-hidden text-sm font-light text-gray-400">message</p>
+                                        </div>
                                     </div>
                                     <div class="flex flex-col">
-                                        <h3 class="text-md text-violet-500">user name</h3>
-                                        <p class="h-5 overflow-hidden text-sm font-light text-gray-400">message</p>
+                                        <p><span class="text-green-500 text-sm"> spn</span> </p>
+                                        <p><span class="text-green-500 text-sm">online</span></p> 
                                     </div>
-                                </div>
-                                <div class="flex flex-col">
-                                    <p><span class="text-green-500 text-sm"> spn</span> </p>
-                                    <p><span class="text-green-500 text-sm">online</span></p> 
-                                </div>
-                            </a>
+                                </a>
+                            </div>
                         </div>
                 </div>
-                <div class="basis-4/6">
-                    <div class="flex justify-center items-center h-screen">
+                <div class="basis-4/6"> 
+                    <div class="start_chat_text flex justify-center items-center h-screen">
                       <p class='font-bold text-gray-300 text-3xl'>Please select a user to chat...</p>
                     </div>
                     <div class="user-info-header bg-white px-5 py-3">
@@ -90,4 +91,13 @@
             </div>
         </div>
     </div>
+    <script>
+         console.log('here i am ');
+Echo.channel('status-update')
+.listen('UserStatusEvent',(e)=>{
+    console.log('listen');
+    console.log(e);
+});
+console.log('here end ');
+    </script>
 </x-app-layout>

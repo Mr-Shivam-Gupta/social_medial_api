@@ -30,7 +30,7 @@ class UserStatusEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('status-update'),
+            new Channel('status-update'),
         ];
     }
 }
