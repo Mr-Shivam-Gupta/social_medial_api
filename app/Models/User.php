@@ -21,7 +21,7 @@ class User extends Authenticatable
      */
     public function following() {
         return $this->belongsToMany(Follower::class, 'followers', 'user_id', 'follower_id');
-    }
+       }
     protected $fillable = [
         'name',
         'email',

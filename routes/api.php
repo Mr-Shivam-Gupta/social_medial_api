@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Auth\LoginRegisterController;
 
 /*
@@ -42,13 +43,13 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::delete('/{id}/delete', [ProfileController::class, 'destroy']);
     
     Route::put('/{id}/privacy', [ProfileController::class, 'updatePrivacy']);
+});
 
-    Route::post('/{id}/follow', [ProfileController::class, 'followUser']);
-    Route::post('/{id}/unfollow', [ProfileController::class, 'unfollowUser']);
-    Route::get('/{id}/followers', [ProfileController::class, 'followers']);
-    Route::get('/user/following', [ProfileController::class, 'userFollowing']);
-
-    });
+    Route::post('user/{id}/follow', [FollowController::class, 'followUser']);
+    Route::post('user/{id}/unfollow', [FollowController::class, 'unfollowUser']);
+    Route::get('user/{id}/followers', [FollowController::class, 'followers']);
+    Route::get('/user/following', [FollowController::class, 'userFollowing']);
+    Route::get('/accept-request/{id}', [FollowController::class, 'acceptRequest']);
 
 
     // Like posts

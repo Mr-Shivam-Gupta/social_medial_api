@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Profile;
 use App\Models\User;
 use App\Models\Follower;
+use App\Models\RequestFollower;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -20,69 +21,6 @@ class ProfileController extends Controller
             $file->move(public_path('profile_images'), $imageName);
             return $imageName;
         }
-
-        public function updatePrivacy(Request $request, $id)
-        {
-            $profile = Profile::findOrFail($id);
-
-            // Ensure only the authenticated user can update their own profile
-            if ($profile->user_id != auth()->id()) {
-                return response()->json(['message' => 'Unauthorized'], 401);
-            }
-            $validatedData = $request->validate([
-                'privacy' => 'required|in:public,private',
-            ]);
-
-            $profile->update($validatedData);
-
-            return response()->json(['message' => 'Privacy settings updated successfully', 'profile' => $profile]);
-        }
-        public function followUser($id)
-        {
-            $userToFollow = Profile::findOrFail($id);
-            
-             $alreadyFollowed = Follower::where('follower_id', $userToFollow->id)->where('user_id', auth()->id())->exists();
-            if ($alreadyFollowed) {
-                return response()->json(['message' => 'User is already being followed']);
-            }
-
-            auth()->user()->following()->attach($userToFollow);
-
-            return response()->json(['message' => 'User followed successfully']);
-        }
-        public function unfollowUser($id)
-        {
-            $userToUnfollow = Profile::findOrFail($id);
-
-            auth()->user()->following()->detach($userToUnfollow);
-
-            return response()->json(['message' => 'User unfollowed successfully']);
-        }
-        
-        public function followers($id)
-        {
-            $profile = Profile::findOrFail($id);
-
-            $followers = Follower::where('user_id', $profile->user_id)->get();
-            $followersCount = $followers->count();
-        
-            return response()->json(['followers_count' => $followersCount, 'followers' => $followers]);
-        
-        }
-
-        public function userFollowing()
-        {
-            $following = Follower::where('follower_id', auth()->user()->id)->get();
-        
-            if ($following->isEmpty()) {
-                return response()->json(['message' => 'You are not following any users.']);
-            }
-        
-            $followingCount = $following->count();
-        
-            return response()->json(['following_count' => $followingCount, 'following' => $following]);
-        }
-        
     public function index()
     {
         return Profile::all();
@@ -156,4 +94,27 @@ class ProfileController extends Controller
         $user->delete();
         return response()->json(['message' => 'Profile deleted successfully']);
     }
+
+
+
+    public function updatePrivacy(Request $request, $id)
+    {
+        $profile = Profile::findOrFail($id);
+
+        // Ensure only the authenticated user can update their own profile
+        if ($profile->user_id != auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        $validatedData = $request->validate([
+            'privacy' => 'required|in:public,private',
+        ]);
+
+        $profile->update($validatedData);
+
+        return response()->json(['message' => 'Privacy settings updated successfully', 'profile' => $profile]);
+    }
+
+  
+    
+
 }
