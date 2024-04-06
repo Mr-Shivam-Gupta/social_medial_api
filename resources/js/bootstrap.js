@@ -22,12 +22,13 @@ window.Pusher = Pusher;
 
 window.Echo = new Echo({
     broadcaster: 'pusher',
-    key: '1234pusher',
-    cluster:  'mt1',
+    key: process.env.PUSHER_APP_KEY,
+    cluster: process.env.PUSHER_APP_CLUSTER,
+    forceTLS: true,
     wsHost: window.location.host,
     wsPort: 6001,
     wssPort: 6001,
     forceTLS: 'http',
-    enabledTransports: ['ws', 'wss'],
+    enabledTransports: ['ws', 'wss'],   
     disablestats: true,
 });

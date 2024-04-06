@@ -19,3 +19,6 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('status-update', function ($user) {
     return $user;
 });
+Broadcast::channel('status', function ($user) {
+    return $user;
+});

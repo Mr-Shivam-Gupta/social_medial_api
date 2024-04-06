@@ -11,7 +11,6 @@ use App\Models\RequestFollower;
 
 class FollowController extends Controller
 {
- 
     public function acceptRequest($id){
         $request = RequestFollower::where('sender_id', $id)->where('receiver_id', auth()->id())->first();
       // Check if the request exists

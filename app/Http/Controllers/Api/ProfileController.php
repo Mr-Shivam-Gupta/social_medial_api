@@ -21,10 +21,10 @@ class ProfileController extends Controller
             $file->move(public_path('profile_images'), $imageName);
             return $imageName;
         }
-    public function index()
-    {
-        return Profile::all();
-    }
+            public function index()
+            {
+                return Profile::all();
+            }
 
     public function show($id)
     {

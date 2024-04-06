@@ -17,29 +17,7 @@
         <script src="{{ mix('js/app.js') }}"></script>
         <link href="{{ mix('css/app.css') }}" rel="stylesheet">
         <!-- Scripts -->
-        <script>
 
-Echo.channel('status-update')
-    .listen('.UserStatusEvent', (e) => {
-        console.log('UserStatusEvent received:', e);
-        // Handle the event data as needed
-    });
-    
-    Echo.join('status-update')
-        .here((user)=>{
-            console.log('here');
-            console.log(user);
-        }).joining((user)=>{
-            console.log('joining');
-            console.log(user);
-        }).leaving((user)=>{
-            console.log('leaving');
-            console.log(user);
-        }).listen('UserStatusEvent',(e)=>{
-            console.log('listen');
-            console.log(e);
-        });
-        </script>
         <script>
             var sender_id =@json(auth()->user()->id) ;
             var receiver_id;

@@ -10,14 +10,14 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class UserStatusEvent implements ShouldBroadcast
+class StatusEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      */
-    public $status;
+   public $status;
     public function __construct($status)
     {
         $this->status = $status;
@@ -31,7 +31,7 @@ class UserStatusEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel('status-update'),
+            new Channel('status'),
         ];
     }
 }
