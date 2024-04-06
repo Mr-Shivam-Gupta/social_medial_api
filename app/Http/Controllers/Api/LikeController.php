@@ -24,9 +24,12 @@ class LikeController extends Controller
 
     public function destroy($id)
     {
-        $like = Like::findOrFail($id);
-        $like->delete();
-
-        return response()->json(['message' => 'Like removed successfully']);
+        $like = Like::where('post_id', $id)->where('user_id', auth()->id())->first();
+        if ($like) {
+            $like->delete();
+            return response()->json(['message' => 'Like removed successfully']);
+        } else {
+            return response()->json(['message' => 'Like not found'], 404);
+        }
     }
 }

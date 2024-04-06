@@ -91,5 +91,13 @@
             </div>
         </div>
     </div>
-
+    <script>
+         console.log('here i am ');
+Echo.channel('status-update')
+.listen('UserStatusEvent',(e)=>{
+    console.log('listen');
+    console.log(e);
+});
+console.log('here end ');
+    </script>
 </x-app-layout>
