@@ -45,5 +45,5 @@ To start the development server, run:
 ```bash
 php artisan serve
 ```
-![api file ](api_routes.xlsx) 
+9.You will get the file `api_routes.xlsx` in this directory use it to configure.
 
