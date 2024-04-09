@@ -16,34 +16,71 @@ class PostController extends Controller
 
     public function index()
     {
-        
-    $user_id = auth()->id();
-    $posts = [];
-    // Retrieve posts from users with private profiles followed by the current user
-    $private_profiles = Profile::where('privacy', 'private')->get();
-    foreach ($private_profiles as $private_profile) {
+        $user_id = auth()->id();
+        $posts = [];
+    
+        // Retrieve posts from users with private profiles followed by the current user
+        $private_profiles = Profile::where('privacy', 'private')->get();
         $follower = Follower::where('user_id', $user_id)->first();
-        if ($follower) {
-            $private_posts = Post::where('user_id', $follower->follower_id)
-                ->orderByDesc('id')
-                ->select('content', 'media')
+        foreach ($private_profiles as $private_profile) {
+            if ($follower) {
+                $private_posts = Post::select('posts.id', 'content', 'media', DB::raw('COUNT(likes.id) as likes_count'), DB::raw('IF(MAX(likes.user_id = ' . $user_id . '), true, false) as is_liked'))
+                    ->leftJoin('likes', 'posts.id', '=', 'likes.post_id')
+                    ->where('posts.user_id', $follower->follower_id) // Specify posts.user_id
+                    ->groupBy('posts.id', 'content', 'media') // Group by all selected columns
+                    ->orderByDesc('posts.id')
+                    ->get()
+                    ->toArray();
+                $posts = array_merge($posts, $private_posts);
+            }
+        }
+        // Retrieve posts from users with public profiles
+        $public_profiles = Profile::where('privacy', 'public')->get();
+        foreach ($public_profiles as $public_profile) {
+            $public_posts = Post::select('posts.id', 'content', 'media', DB::raw('COUNT(likes.id) as likes_count'), DB::raw('IF(MAX(likes.user_id = ' . $user_id . '), true, false) as is_liked'))
+                ->leftJoin('likes', 'posts.id', '=', 'likes.post_id')
+                ->where('posts.user_id', $public_profile->user_id) // Specify posts.user_id
+                ->groupBy('posts.id', 'content', 'media') // Group by all selected columns
+                ->orderByDesc('posts.id')
                 ->get()
                 ->toArray();
-            $posts = array_merge($posts, $private_posts);
+            $posts = array_merge($posts, $public_posts);
         }
+    
+        return response()->json(['posts' => $posts]);
     }
-    // Retrieve posts from users with public profiles
-    $public_profiles = Profile::where('privacy', 'public')->get();
-    foreach ($public_profiles as $public_profile) {
-        $public_posts = Post::where('user_id', $public_profile->user_id)
-            ->orderByDesc('id')
-            ->select('id','content', 'media')
-            ->get()
-            ->toArray();
-        $posts = array_merge($posts, $public_posts);
-    }
-    return response()->json(['posts' => $posts]);
-    }
+    
+    
+    // public function index()
+    // {
+        
+    // $user_id = auth()->id();
+    // $posts = [];
+    // // Retrieve posts from users with private profiles followed by the current user
+    // $private_profiles = Profile::where('privacy', 'private')->get();
+    // foreach ($private_profiles as $private_profile) {
+    //     $follower = Follower::where('user_id', $user_id)->first();
+    //     if ($follower) {
+    //         $private_posts = Post::where('user_id', $follower->follower_id)
+    //             ->orderByDesc('id')
+    //             ->select('content', 'media')
+    //             ->get()
+    //             ->toArray();
+    //         $posts = array_merge($posts, $private_posts);
+    //     }
+    // }
+    // // Retrieve posts from users with public profiles
+    // $public_profiles = Profile::where('privacy', 'public')->get();
+    // foreach ($public_profiles as $public_profile) {
+    //     $public_posts = Post::where('user_id', $public_profile->user_id)
+    //         ->orderByDesc('id')
+    //         ->select('id','content', 'media')
+    //         ->get()
+    //         ->toArray();
+    //     $posts = array_merge($posts, $public_posts);
+    // }
+    // return response()->json(['posts' => $posts]);
+    // }
 
     public function show($id)
     {
@@ -109,7 +146,7 @@ class PostController extends Controller
             'media' => $mediaJson,
         ]);
 
-        return response()->json(['message' => 'Post created successfully', 'post' => $post], 201);
+        return response()->json(['message' => 'Post created successfully', 'post' => $post], 200);
     }
 
     private function uploadImage($file)

@@ -55,7 +55,7 @@ class LoginRegisterController extends Controller
             'data' => $data,
         ];
 
-        return response()->json($response, 201);
+        return response()->json(['response' => $response], 200);
     }
 
     /**
@@ -99,7 +99,7 @@ class LoginRegisterController extends Controller
             'data' => $data,
         ];
 
-        return response()->json($response, 200);
+        return response()->json(['response' => $response], 200);
     } 
 
     /**
