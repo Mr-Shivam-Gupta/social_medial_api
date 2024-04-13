@@ -14,6 +14,14 @@ class LikeController extends Controller
             'post_id' => 'required|exists:posts,id',
         ]);
 
+                $alreadyLiked = Like::where('user_id', auth()->id())
+                ->where('post_id', $validatedData['post_id'])
+                ->first();
+
+                if ($alreadyLiked) {
+                return response()->json(['message' => 'Post already liked'], 400);
+                }
+                
         $like = Like::create([
             'user_id' => auth()->id(),
             'post_id' => $validatedData['post_id'],
