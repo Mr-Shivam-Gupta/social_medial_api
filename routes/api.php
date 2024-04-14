@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\FollowController;
-use App\Http\Controllers\Auth\LoginRegisterController;
+use App\Http\Controllers\Api\LoginRegisterController;
 
 /*
 |--------------------------------------------------------------------------

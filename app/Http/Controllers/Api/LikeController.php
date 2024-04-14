@@ -5,9 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Like;
+use App\Models\Post;
 
 class LikeController extends Controller
 {
+    private function likeCount($postId)
+    {
+        return Like::where('post_id', $postId)->count();
+    }
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -19,7 +24,9 @@ class LikeController extends Controller
             'post_id' => $validatedData['post_id'],
         ]);
 
-        return response()->json(['message' => 'Post liked successfully', 'like' => $like], 201);
+        $likeCount = $this->likeCount($validatedData['post_id']);
+
+        return response()->json(['message' => 'Post liked successfully', 'like' => $like, 'like_count' => $likeCount], 201);
     }
 
     public function destroy($id)
@@ -27,9 +34,11 @@ class LikeController extends Controller
         $like = Like::where('post_id', $id)->where('user_id', auth()->id())->first();
         if ($like) {
             $like->delete();
-            return response()->json(['message' => 'Like removed successfully']);
+            $likeCount = $this->likeCount($id);
+            return response()->json(['message' => 'Like removed successfully', 'like_count' => $likeCount]);
         } else {
             return response()->json(['message' => 'Like not found'], 404);
         }
     }
+    
 }
